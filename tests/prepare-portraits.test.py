@@ -1,6 +1,7 @@
 import importlib.util
 import unittest
 from pathlib import Path
+from PIL import Image
 
 SPEC = importlib.util.spec_from_file_location(
     "prepare_portraits", Path(__file__).resolve().parents[1] / "scripts/prepare-portraits.py"
@@ -38,6 +39,12 @@ class PortraitPreparationTests(unittest.TestCase):
         for eyes in [[], [(1, 1)], [(1, 1), (1, 1)], [(float("nan"), 1), (2, 2)]]:
             with self.assertRaises(ValueError):
                 MODULE.inverse_alignment(eyes, [(100, 100), (200, 100)])
+
+    def test_padding_never_reflects_a_second_chin_below_the_portrait(self):
+        source = Image.new("RGB", (512, 512), (20, 20, 20))
+        source.paste((220, 130, 100), (245, 450, 265, 512))
+        padded = MODULE.reflected_edges(source)
+        self.assertEqual(padded.getpixel((128 + 255, 128 + 512 + 20)), (20, 20, 20))
 
 
 if __name__ == "__main__":
