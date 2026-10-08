@@ -5,15 +5,24 @@ export const STAGES = [
   { name: '牢提', value: 100, color: '#c04747', code: 'LAO TI' },
 ] as const;
 
-export const PORTRAIT_FRAMES = [
-  { value: 0, file: 'tibo-handsome.jpg' },
-  { value: 16.5, file: 'tibo-handsome-smile-mid.jpg' },
+const PORTRAIT_ANCHORS = [
+  { value: 0, file: 'tibo-handsome-v2.jpg' },
   { value: 33, file: 'tibo-reset.jpg' },
-  { value: 50, file: 'tibo-smile-serious-mid.jpg' },
   { value: 67, file: 'tibo-ban.jpg' },
-  { value: 83.5, file: 'tibo-serious-disheveled-mid.jpg' },
-  { value: 100, file: 'tibo-disheveled.jpg' },
+  { value: 100, file: 'tibo-disheveled-v2.jpg' },
 ] as const;
+
+const SEGMENTS = ['first', 'middle', 'last'] as const;
+
+// Fourteen independent in-between photographs per segment, plus the exact anchors.
+export const PORTRAIT_FRAMES = PORTRAIT_ANCHORS.flatMap((anchor, segment) => {
+  const next = PORTRAIT_ANCHORS[segment + 1];
+  if (!next) return [anchor];
+  return [anchor, ...Array.from({ length: 14 }, (_, index) => ({
+    value: anchor.value + (next.value - anchor.value) * (index + 1) / 15,
+    file: `tibo-${SEGMENTS[segment]}-${String(index + 1).padStart(2, '0')}.jpg`,
+  }))];
+});
 
 export type Direction = 1 | -1;
 

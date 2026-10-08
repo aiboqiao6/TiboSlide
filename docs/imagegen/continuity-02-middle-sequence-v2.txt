@@ -1,0 +1,12 @@
+Use case: identity-preserve
+Asset type: 4x4 portrait transformation sprite sheet with exactly 16 equal edge-to-edge square cells
+Input image 1: DESTINATION anchor, the serious man looking left. Input image 2: START anchor, the smiling man facing the camera.
+Primary request: show a slow physical transformation from image 2 to image 1, read left-to-right across each row then top-to-bottom. It is crucial that the START man's face actually becomes the DESTINATION man's face, NOT merely the start man turning his head. By the last row it must look exactly like image 1: broader face, shorter blunter nose, heavier brow and jaw, less neat softer brown side-swept hair, more mature tired skin, wider rounder facial proportions, serious level gaze to viewer's LEFT, original image 1's gray-taupe wall and close framing. Do not keep the slim long-nosed smiling man's face in the final row.
+Cell 1: exactly recreate image 2 as a square portrait.
+Cells 2-4: smile decreases gradually, subtle rotation toward viewer's left, gradual change of face shape.
+Cells 5-8: mouth closes, jaw and brow gradually become broader like image 1, eyes become image 1's eyes, hair becomes brown and softer, chin and cheek proportions transition toward image 1.
+Cells 9-12: mostly the mature serious image 1 face now, correct rounded face and blunt nose; gradually reduce remaining differences of face shape, hairstyle, gaze, head angle, lighting and hoodie silhouette.
+Cells 13-15: nearly exact image 1, tiny remaining progressive differences only.
+Cell 16: faithfully recreate image 1 including face, head angle, crop, wall and hoodie.
+Continuity: use equally spaced changes, preserve an uninterrupted monotonic leftward turn, NEVER nose pointing toward viewer's right. Every cell has only one solid photorealistic face. One slow continuous facial metamorphosis, no double exposure or photo blending, no ghosted eyes. Camera stays still, head size and position shift progressively to the destination's exact position. Ensure the second cell is extremely close to start and penultimate is extremely close to destination.
+Layout: exactly 4 columns by 4 rows, all 16 cells same size, no gutters, borders, margins, caption, cell numbers, labels, text, props or watermark. Entire sheet filled by portraits.

@@ -6,6 +6,18 @@ import { parseArgs } from 'node:util';
 
 const MAX_BYTES = 50 * 1024 * 1024;
 
+export function validateSize(input = '1024x1024') {
+  const match = /^(\d+)x(\d+)$/.exec(input);
+  if (!match) throw new Error('Invalid image size');
+  const [width, height] = match.slice(1).map(Number);
+  if (width % 16 || height % 16 || Math.max(width, height) > 3840
+    || Math.min(width, height) <= 0 || Math.max(width, height) / Math.min(width, height) > 3
+    || width * height < 655360 || width * height > 8294400) {
+    throw new Error('Unsupported image size');
+  }
+  return input;
+}
+
 function verifyImage(bytes) {
   const png = bytes.subarray(0, 8).equals(Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]));
   const jpeg = bytes[0] === 255 && bytes[1] === 216 && bytes[2] === 255;
@@ -78,9 +90,10 @@ async function generate(values) {
   if (!values.image?.length || !values['prompt-file']) throw new Error('--image and --prompt-file are required');
   const prompt = (await readFile(values['prompt-file'], 'utf8')).trim();
   if (!prompt) throw new Error('Image prompt must not be empty');
+  const size = validateSize(values.size);
   const form = new FormData();
   for (const [name, value] of Object.entries({
-    model: 'gpt-image-2', prompt, n: '1', size: '1024x1024', quality: 'high', output_format: 'png',
+    model: 'gpt-image-2', prompt, n: '1', size, quality: 'high', output_format: 'png',
   })) form.append(name, value);
   for (const path of values.image) {
     const bytes = verifyImage(await readFile(path));
@@ -88,7 +101,7 @@ async function generate(values) {
     form.append(values.image.length === 1 ? 'image' : 'image[]', new Blob([bytes], { type }), basename(path));
   }
   endpoint.pathname = `${endpoint.pathname.replace(/\/$/, '')}/images/edits`;
-  console.log(JSON.stringify({ event: 'generation_started', model: 'gpt-image-2', images: values.image.length }));
+  console.log(JSON.stringify({ event: 'generation_started', model: 'gpt-image-2', size, images: values.image.length }));
   // No automatic generation retries: a lost response could already be billable.
   const response = await fetch(endpoint, {
     method: 'POST',
@@ -106,6 +119,7 @@ async function main() {
       image: { type: 'string', multiple: true },
       'prompt-file': { type: 'string' },
       out: { type: 'string' },
+      size: { type: 'string' },
       'resume-response': { type: 'string' },
     },
   });

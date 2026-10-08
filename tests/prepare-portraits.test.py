@@ -43,7 +43,7 @@ class PortraitPreparationTests(unittest.TestCase):
     def test_padding_never_reflects_a_second_chin_below_the_portrait(self):
         source = Image.new("RGB", (512, 512), (20, 20, 20))
         source.paste((220, 130, 100), (245, 450, 265, 512))
-        padded = MODULE.reflected_edges(source)
+        padded = MODULE.extend_background(source)
         self.assertEqual(padded.getpixel((128 + 255, 128 + 512 + 20)), (20, 20, 20))
 
 
