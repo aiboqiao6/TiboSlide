@@ -36,7 +36,7 @@ test('supports four presets, exact endpoints and reset', async ({ page }) => {
   await expect(slider).toHaveValue('0');
 });
 
-test('supports keyboard, dragging and a shared URL', async ({ page }) => {
+test('supports keyboard, dragging and a shared URL', async ({ page }, testInfo) => {
   const slider = page.getByRole('slider', { name: '变祖进度' });
   await slider.focus();
   await slider.press('ArrowRight');
@@ -47,7 +47,14 @@ test('supports keyboard, dragging and a shared URL', async ({ page }) => {
   await expect(slider).toHaveValue('0');
   const box = await slider.boundingBox();
   if (!box) throw new Error('Slider has no layout box');
-  await slider.tap({ position: { x: box.width * 0.7, y: box.height / 2 } });
+  if (testInfo.project.name === 'mobile') {
+    await slider.tap({ position: { x: box.width * 0.7, y: box.height / 2 } });
+  } else {
+    await page.mouse.move(box.x + 14, box.y + box.height / 2);
+    await page.mouse.down();
+    await page.mouse.move(box.x + box.width * 0.7, box.y + box.height / 2, { steps: 8 });
+    await page.mouse.up();
+  }
   expect(Number(await slider.inputValue())).toBeGreaterThan(50);
   await page.goto('/?z=80');
   await expect(slider).toHaveValue('80');
@@ -68,6 +75,8 @@ test('plays, pauses and cancels playback on manual input', async ({ page }) => {
 });
 
 test('compares originals and exports an actual PNG', async ({ page }) => {
+  await page.goto('/?z=50');
+  await expect(page.locator('#portrait')).toHaveAttribute('data-ready', 'true');
   const before = await page.locator('#portrait').evaluate((node) => (node as HTMLCanvasElement).toDataURL());
   await page.getByRole('button', { name: '对比原图' }).click();
   await expect(page.getByRole('button', { name: '返回变祖' })).toHaveAttribute('aria-pressed', 'true');

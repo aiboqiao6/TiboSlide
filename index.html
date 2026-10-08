@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f5f7f6" />
+    <meta name="description" content="Tibo 滑动变祖器：重置卡、重置、降智、封号。一个纯属娱乐的四档人像滑动小玩具。" />
+    <title>Tibo 滑动变祖器</title>
+    <link rel="icon" type="image/png" href="./assets/favicon.png" />
+    <link rel="preload" as="image" href="./assets/tibo-reset.jpg" />
+    <link rel="preload" as="image" href="./assets/tibo-ban.jpg" />
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="wordmark" href="./" aria-label="TiboSlide 首页">
+        <span class="mark" aria-hidden="true"><i data-lucide="sliders-horizontal"></i></span>
+        <span>TIBO<span class="wordmark-light">SLIDE</span><span class="version">/ 01</span></span>
+      </a>
+      <nav aria-label="项目">
+        <a class="icon-button" href="https://github.com/aiboqiao6/TiboSlide" target="_blank" rel="noopener noreferrer" aria-label="GitHub 源码" data-tooltip="GitHub 源码"><i data-lucide="code-2"></i></a>
+        <button class="icon-button" id="share" aria-label="分享当前档位" data-tooltip="分享当前档位"><i data-lucide="share-2"></i></button>
+      </nav>
+    </header>
+
+    <main>
+      <section class="instrument" aria-labelledby="title">
+        <div class="intro">
+          <span class="eyebrow"><span class="live-dot"></span> THE TIBO EXPERIMENT</span>
+          <h1 id="title">Tibo 滑动变<span>祖</span>器</h1>
+          <div class="serial"><span>状态实验室</span><span>NO. 001 — TIBO</span></div>
+        </div>
+
+        <div class="display">
+          <aside class="readout readout-stage">
+            <span class="micro-label">当前档位 / STATUS</span>
+            <span class="stage-index" id="stage-index">01<span>/ 04</span></span>
+            <h2 id="stage-name">重置卡</h2>
+            <span class="stage-code" id="stage-code">RESET CARD</span>
+            <div class="stage-indicators" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+          </aside>
+
+          <div class="portrait-area">
+            <div class="portrait-caption"><span><span class="live-dot"></span> TIBO</span><span id="portrait-mode">MORPH / LIVE</span></div>
+            <div class="portrait-wrap">
+              <canvas id="portrait" width="512" height="512" role="img" aria-label="Tibo 当前档位人像"></canvas>
+              <div class="loading" id="loading" role="status">
+                <span id="load-message">正在加载人像…</span>
+                <button id="retry" hidden><i data-lucide="rotate-cw"></i>重新加载</button>
+              </div>
+              <span class="frame-corner corner-tl" aria-hidden="true"></span>
+              <span class="frame-corner corner-tr" aria-hidden="true"></span>
+              <span class="frame-corner corner-bl" aria-hidden="true"></span>
+              <span class="frame-corner corner-br" aria-hidden="true"></span>
+            </div>
+            <div class="portrait-bottom"><span>FIG. 01</span><span>THE SAME TIBO.</span></div>
+          </div>
+
+          <aside class="readout readout-value">
+            <span class="micro-label">变祖进度 / LEVEL</span>
+            <div class="percentage"><output id="percentage" for="intensity">0</output><span>%</span></div>
+            <div class="level-bars" id="level-bars" aria-hidden="true"></div>
+            <span class="range-note">MIN 0 <span>MAX 100</span></span>
+          </aside>
+        </div>
+
+        <div class="control-deck">
+          <div class="control-header">
+            <span class="micro-label"><i data-lucide="sliders-horizontal"></i> 变祖控制台</span>
+            <div class="toolbar" aria-label="控制">
+              <button class="icon-button" id="compare" aria-label="对比原图" aria-pressed="false" data-tooltip="对比原图" disabled><i data-lucide="columns-2"></i></button>
+              <button class="icon-button" id="play" aria-label="自动变祖" aria-pressed="false" data-tooltip="自动变祖" disabled><i data-lucide="play"></i></button>
+              <button class="icon-button" id="reset" aria-label="复位" data-tooltip="复位" disabled><i data-lucide="rotate-ccw"></i></button>
+              <span class="toolbar-divider" aria-hidden="true"></span>
+              <button class="icon-button" id="download" aria-label="保存图片" data-tooltip="保存图片" disabled><i data-lucide="download"></i></button>
+            </div>
+          </div>
+
+          <div class="slider-shell">
+            <div class="slider-scale" aria-hidden="true"><span>0</span><span>25</span><span>50</span><span>75</span><span>100</span></div>
+            <div class="slider-track" aria-hidden="true"><span id="track-fill"></span></div>
+            <input id="intensity" type="range" min="0" max="100" step="1" value="0" aria-label="变祖进度" disabled />
+            <div class="ticks" aria-hidden="true"></div>
+          </div>
+
+          <fieldset class="presets" id="presets">
+            <legend class="sr-only">变祖档位</legend>
+          </fieldset>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <span>TIBOSLIDE <span class="footer-slash">/</span> JUST FOR FUN</span>
+      <span>纯属娱乐，不代表本人或任何机构观点。</span>
+    </footer>
+    <div id="notice" class="notice" role="status" hidden></div>
+    <dialog id="share-dialog">
+      <div class="dialog-header"><h2>当前档位链接</h2><button id="close-share" class="icon-button" aria-label="关闭"><i data-lucide="x"></i></button></div>
+      <input id="share-url" aria-label="分享链接" readonly />
+      <button id="copy-link" class="copy-button"><i data-lucide="copy"></i>复制链接</button>
+    </dialog>
+    <script type="module" src="./src/main.ts"></script>
+  </body>
+</html>
