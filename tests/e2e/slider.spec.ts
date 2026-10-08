@@ -30,10 +30,10 @@ test('loads a nonblank portrait without errors or overflow', async ({ page }, te
 
 test('supports four presets, exact endpoints and reset', async ({ page }) => {
   const slider = page.getByRole('slider', { name: '变祖进度' });
-  await page.getByRole('radio', { name: '封号', exact: true }).click();
+  await page.getByRole('radio', { name: '牢提', exact: true }).click();
   await expect(slider).toHaveValue('100');
   await expect(page.locator('#percentage')).toHaveText('100');
-  await page.getByRole('radio', { name: '重置卡', exact: true }).click();
+  await page.getByRole('radio', { name: '提祖', exact: true }).click();
   await expect(slider).toHaveValue('0');
   await page.getByRole('button', { name: '复位' }).click();
   await expect(slider).toHaveValue('0');
@@ -61,7 +61,7 @@ test('supports keyboard, dragging and a shared URL', async ({ page }, testInfo) 
   expect(Number(await slider.inputValue())).toBeGreaterThan(50);
   await page.goto('/?z=80');
   await expect(slider).toHaveValue('80');
-  await expect(page.locator('#stage-name')).toHaveText('降智');
+  await expect(page.locator('#stage-name')).toHaveText('提波');
 });
 
 test('plays, pauses and cancels playback on manual input', async ({ page }) => {
@@ -72,7 +72,7 @@ test('plays, pauses and cancels playback on manual input', async ({ page }) => {
   await expect(page.getByRole('button', { name: '自动变祖' })).toBeVisible();
   await expect(page.getByRole('slider')).toHaveValue(value);
   await page.getByRole('button', { name: '自动变祖' }).click();
-  await page.getByRole('radio', { name: '重置', exact: true }).click();
+  await page.getByRole('radio', { name: '提圣', exact: true }).click();
   await expect(page.getByRole('slider')).toHaveValue('33');
   await expect(page.getByRole('button', { name: '自动变祖' })).toBeVisible();
 });
@@ -101,4 +101,56 @@ test('shows a recoverable image-loading error', async ({ page }) => {
   await page.getByRole('button', { name: '重新加载' }).click();
   await expect(page.locator('#portrait')).toHaveAttribute('data-ready', 'true');
   await expect(page.getByRole('slider')).toBeEnabled();
+});
+
+test('uses the four new titles without the old thumbnail cards', async ({ page }) => {
+  await expect(page.getByRole('radio')).toHaveCount(4);
+  for (const title of ['提祖', '提圣', '提波', '牢提']) {
+    await expect(page.getByRole('radio', { name: title, exact: true })).toBeEnabled();
+  }
+  await expect(page.locator('.preset-image')).toHaveCount(0);
+  await expect(page.locator('#presets')).not.toContainText(/重置卡|降智|封号/);
+});
+
+test('renders a single source photo pixel-for-pixel at every slider position', async ({ page }) => {
+  const result = await page.evaluate(async () => {
+    const frames = [
+      { value: 0, file: 'tibo-handsome.jpg' },
+      { value: 16.5, file: 'tibo-handsome-smile-mid.jpg' },
+      { value: 33, file: 'tibo-reset.jpg' },
+      { value: 50, file: 'tibo-smile-serious-mid.jpg' },
+      { value: 67, file: 'tibo-ban.jpg' },
+      { value: 83.5, file: 'tibo-serious-disheveled-mid.jpg' },
+      { value: 100, file: 'tibo-disheveled.jpg' },
+    ];
+    const source = document.createElement('canvas');
+    source.width = source.height = 512;
+    const sourceContext = source.getContext('2d')!;
+    const referencePixels = await Promise.all(frames.map(async (frame) => {
+      const image = new Image();
+      image.src = new URL(`./assets/${frame.file}`, location.href).href;
+      await image.decode();
+      sourceContext.clearRect(0, 0, 512, 512);
+      sourceContext.drawImage(image, 0, 0, 512, 512);
+      return sourceContext.getImageData(0, 0, 512, 512).data;
+    }));
+    const canvas = document.getElementById('portrait') as HTMLCanvasElement;
+    const context = canvas.getContext('2d')!;
+    const slider = document.getElementById('intensity') as HTMLInputElement;
+    const mismatches: number[] = [];
+    const visited = new Set<number>();
+    for (let value = 0; value <= 100; value++) {
+      slider.value = String(value);
+      slider.dispatchEvent(new Event('input', { bubbles: true }));
+      const nearest = frames.reduce((best, frame, index) =>
+        Math.abs(frame.value - value) <= Math.abs(frames[best].value - value) ? index : best, 0);
+      visited.add(nearest);
+      const actual = context.getImageData(0, 0, 512, 512).data;
+      const expected = referencePixels[nearest];
+      if (actual.some((byte, index) => byte !== expected[index])) mismatches.push(value);
+    }
+    return { mismatches, visited: visited.size };
+  });
+  expect(result.mismatches).toEqual([]);
+  expect(result.visited).toBe(7);
 });
