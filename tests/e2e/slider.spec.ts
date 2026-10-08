@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { PORTRAIT_FRAMES } from '../../src/state';
 
 test.beforeEach(async ({ page }) => {
   await page.goto('/');
@@ -113,16 +114,7 @@ test('uses the four new titles without the old thumbnail cards', async ({ page }
 });
 
 test('renders a single source photo pixel-for-pixel at every slider position', async ({ page }) => {
-  const result = await page.evaluate(async () => {
-    const frames = [
-      { value: 0, file: 'tibo-handsome.jpg' },
-      { value: 16.5, file: 'tibo-handsome-smile-mid.jpg' },
-      { value: 33, file: 'tibo-reset.jpg' },
-      { value: 50, file: 'tibo-smile-serious-mid.jpg' },
-      { value: 67, file: 'tibo-ban.jpg' },
-      { value: 83.5, file: 'tibo-serious-disheveled-mid.jpg' },
-      { value: 100, file: 'tibo-disheveled.jpg' },
-    ];
+  const result = await page.evaluate(async (frames) => {
     const source = document.createElement('canvas');
     source.width = source.height = 512;
     const sourceContext = source.getContext('2d')!;
@@ -139,7 +131,8 @@ test('renders a single source photo pixel-for-pixel at every slider position', a
     const slider = document.getElementById('intensity') as HTMLInputElement;
     const mismatches: number[] = [];
     const visited = new Set<number>();
-    for (let value = 0; value <= 100; value++) {
+    for (const value of [...Array.from({ length: 101 }, (_, index) => index),
+      ...Array.from({ length: 101 }, (_, index) => 100 - index)]) {
       slider.value = String(value);
       slider.dispatchEvent(new Event('input', { bubbles: true }));
       const nearest = frames.reduce((best, frame, index) =>
@@ -150,7 +143,35 @@ test('renders a single source photo pixel-for-pixel at every slider position', a
       if (actual.some((byte, index) => byte !== expected[index])) mismatches.push(value);
     }
     return { mismatches, visited: visited.size };
-  });
+  }, PORTRAIT_FRAMES);
   expect(result.mismatches).toEqual([]);
-  expect(result.visited).toBe(7);
+  expect(result.visited).toBeGreaterThanOrEqual(46);
+});
+
+test('keeps comparison linked to the original photos after expanding the sequence', async ({ page }) => {
+  await page.goto('/?z=0');
+  await expect(page.locator('#portrait')).toHaveAttribute('data-ready', 'true');
+  await page.getByRole('button', { name: '对比原图' }).click();
+  const result = await page.evaluate(async () => {
+    const canvas = document.getElementById('portrait') as HTMLCanvasElement;
+    const slider = document.getElementById('intensity') as HTMLInputElement;
+    const reference = document.createElement('canvas');
+    reference.width = reference.height = 512;
+    const context = reference.getContext('2d')!;
+    const mismatches: string[] = [];
+    for (const [value, file] of [[0, 'tibo-reset.jpg'], [100, 'tibo-ban.jpg']] as const) {
+      const image = new Image();
+      image.src = new URL(`./assets/${file}`, location.href).href;
+      await image.decode();
+      context.drawImage(image, 0, 0, 512, 512);
+      slider.value = String(value);
+      slider.dispatchEvent(new Event('input', { bubbles: true }));
+      // Exclude the deliberately drawn split divider at the canvas edge.
+      const actual = canvas.getContext('2d')!.getImageData(2, 0, 508, 512).data;
+      const expected = context.getImageData(2, 0, 508, 512).data;
+      if (actual.some((byte, index) => byte !== expected[index])) mismatches.push(file);
+    }
+    return mismatches;
+  });
+  expect(result).toEqual([]);
 });
