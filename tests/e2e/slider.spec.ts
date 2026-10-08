@@ -22,6 +22,9 @@ test('loads a nonblank portrait without errors or overflow', async ({ page }, te
   expect(pixels.opaque).toBeGreaterThan(100);
   expect(pixels.colors).toBeGreaterThan(50);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+  const presets = await page.locator('#presets').boundingBox();
+  expect(presets).not.toBeNull();
+  expect(presets!.y + presets!.height).toBeLessThanOrEqual(page.viewportSize()!.height);
   await page.screenshot({ path: `test-results/${testInfo.project.name}-initial.png`, fullPage: true });
 });
 
