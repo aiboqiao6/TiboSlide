@@ -1,5 +1,5 @@
 import { createIcons, SlidersHorizontal, Code2, Share2, Columns2, Play, Pause, RotateCcw, RotateCw, Download, X, Copy } from 'lucide';
-import { advancePlayback, clampValue, getStage, initialValue, STAGES, type Direction } from './state';
+import { advancePlayback, clampValue, getStage, initialValue, PORTRAIT_FRAMES, STAGES, type Direction } from './state';
 import { loadImage, Portrait } from './portrait';
 import '@fontsource-variable/manrope';
 import '@fontsource/dm-mono/latin-400.css';
@@ -45,10 +45,6 @@ STAGES.forEach((stage, index) => {
   input.value = String(stage.value);
   input.setAttribute('aria-label', stage.name);
   input.disabled = true;
-  const image = document.createElement('img');
-  image.className = 'preset-image';
-  image.alt = '';
-  image.width = image.height = 38;
   const text = document.createElement('span');
   text.className = 'preset-text';
   const name = document.createElement('span');
@@ -56,9 +52,9 @@ STAGES.forEach((stage, index) => {
   name.textContent = stage.name;
   const number = document.createElement('span');
   number.className = 'preset-number';
-  number.textContent = `0${index + 1} / ${stage.value}%`;
-  text.append(name, number);
-  label.append(input, image, text);
+  number.textContent = `0${index + 1}`;
+  text.append(number, name);
+  label.append(input, text);
   presets.append(label);
   input.addEventListener('change', () => {
     stopPlayback();
@@ -81,7 +77,7 @@ function render(nextValue = value) {
   element('stage-code').textContent = stage.code;
   element('stage-index').innerHTML = `0${index + 1}<span>/ 04</span>`;
   element('track-fill').style.width = `${value}%`;
-  element('portrait-mode').textContent = compare ? 'ORIGINAL / SPLIT' : 'MORPH / LIVE';
+  element('portrait-mode').textContent = compare ? 'ORIGINAL / SPLIT' : 'PORTRAIT / LIVE';
   canvas.setAttribute('aria-label', `Tibo：${stage.name}，变祖进度 ${rounded}%`);
   document.querySelectorAll('.stage-indicators span').forEach((node, i) => node.classList.toggle('active', i === index));
   document.querySelectorAll('#level-bars span').forEach((node, i) => node.classList.toggle('active', i < Math.ceil(value / 5)));
@@ -237,16 +233,9 @@ async function boot() {
   const controls = [slider, playButton, compareButton, resetButton, downloadButton, ...presets.querySelectorAll('input')];
   controls.forEach((control) => { control.disabled = true; });
   try {
-    const [resetImage, banImage] = await Promise.all([
-      loadImage(`${import.meta.env.BASE_URL}assets/tibo-reset.jpg`),
-      loadImage(`${import.meta.env.BASE_URL}assets/tibo-ban.jpg`),
-    ]);
-    portrait = new Portrait(canvas, resetImage, banImage);
-    const images = presets.querySelectorAll<HTMLImageElement>('img');
-    STAGES.forEach((stage, index) => {
-      portrait!.render(stage.value);
-      images[index].src = canvas.toDataURL('image/jpeg', 0.82);
-    });
+    const images = await Promise.all(PORTRAIT_FRAMES.map((frame) =>
+      loadImage(`${import.meta.env.BASE_URL}assets/${frame.file}`)));
+    portrait = new Portrait(canvas, images);
     render();
     canvas.setAttribute('data-ready', 'true');
     loading.hidden = true;

@@ -1,0 +1,5 @@
+Use case: identity-preserve
+Asset type: final square portrait keyframe for a playful face-transition website
+Input image 1: edit target and sole identity reference, the original serious Tibo photograph
+Primary request: create an intentionally less flattering, weary and unkempt version of the SAME adult man. Visibly messy, slightly greasy hair with stray strands, heavier uneven stubble, dark under-eye circles, slightly puffy cheeks, a tired awkward closed-mouth expression. It should read as the humorous end of a handsome-to-disheveled sequence.
+Constraints: preserve recognizable identity, apparent age, head position, head turn, eye positions, black hoodie, shoulder crop, background and original light direction. Change only grooming, tired expression and subtle unflattering details. One coherent photorealistic face with realistic skin texture. Do not blend or superimpose photos. No double exposure, overlapping outlines, ghosting, duplicated facial features, injury, scars, medical condition, grotesque deformation, props, text, logos, watermark or collage. Single full-frame square photograph.

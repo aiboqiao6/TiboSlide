@@ -1,0 +1,6 @@
+Use case: identity-preserve
+Asset type: square portrait transition keyframe
+Input image 1: original smiling Tibo portrait
+Input image 2: original serious side-looking Tibo portrait
+Primary request: generate ONE coherent photorealistic intermediate portrait of the SAME man, exactly halfway between the two photos. Interpolate the head position, head turn, hairstyle and expression: partially relaxed smile, mouth almost closed, gaze turning halfway toward the direction of image 2. The head center should sit halfway between the two reference centers.
+Constraints: preserve recognizable identity and apparent age, black hoodie and simple neutral indoor background. Interpolate the lighting naturally without changing scene or adding objects. One square head-and-shoulders photo, no double exposure or overlapping outlines; one face, two eyes, one nose and one mouth. Natural realistic skin, no text, watermark, logos or collage.

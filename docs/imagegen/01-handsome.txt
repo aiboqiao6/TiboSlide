@@ -1,0 +1,5 @@
+Use case: identity-preserve
+Asset type: square portrait keyframe for a playful face-transition website
+Input image 1: edit target and identity reference, original smiling Tibo portrait
+Primary request: make the same adult man noticeably more handsome in a natural, photorealistic way: tidier dark hairstyle, subtly stronger jaw definition, well-groomed light stubble, brighter attentive eyes, flattering but realistic skin and a confident friendly smile.
+Constraints: preserve recognizable identity, head position, head tilt, eye positions, apparent age, black hoodie, shoulders, original background, camera angle, crop and light direction. Keep the face and hair within the same silhouette so it can blend with the original. Change only grooming and subtle flattering facial details. Keep realistic pores and skin texture; no plastic beauty-filter look; no new props, jewelry, text, logos or watermarks. Single full-frame square photograph, not a collage.

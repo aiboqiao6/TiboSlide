@@ -1,0 +1,6 @@
+Use case: identity-preserve
+Asset type: square portrait transition keyframe
+Input image 1: the enhanced handsome endpoint portrait
+Input image 2: original smiling Tibo portrait
+Primary request: generate ONE coherent photorealistic portrait exactly halfway between these two grooming states. Same man, same friendly smile, the sharper jaw and tidier hair of image 1 softened halfway toward the more ordinary grooming of image 2.
+Constraints: preserve recognizable identity, original black hoodie, background, head tilt, face placement, gaze, crop, camera angle and lighting. Keep the subject aligned to both references. This is a new intermediate photograph, NOT a superimposed double exposure, not a collage or split screen. Only one face, two eyes, one nose and one mouth. Natural pores, no text, watermark, props or logos.

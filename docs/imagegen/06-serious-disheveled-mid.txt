@@ -1,0 +1,6 @@
+Use case: identity-preserve
+Asset type: square portrait transition keyframe
+Input image 1: original serious Tibo portrait
+Input image 2: intentionally unkempt final Tibo portrait
+Primary request: generate ONE coherent photorealistic portrait of the SAME man exactly halfway between these two states. Hair moderately untidy, visible but mild tired eyes and stubble, expression halfway between serious and weary, head position and pose smoothly midway between the references.
+Constraints: retain recognizable identity and apparent age, black hoodie, simple indoor background, camera angle, consistent shoulder crop and realistic skin texture. Single square head-and-shoulders photograph; no double exposure, overlapping faces, collage, text, watermark, logos, new props, injuries or grotesque deformation.
