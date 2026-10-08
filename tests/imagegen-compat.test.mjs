@@ -4,9 +4,21 @@ import { mkdtemp, writeFile, rm } from 'node:fs/promises';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { spawnSync } from 'node:child_process';
-import { decodeImageResponse } from '../scripts/imagegen-compat.mjs';
+import { decodeImageResponse, validateSize } from '../scripts/imagegen-compat.mjs';
 
 const png = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/l9sAAAAASUVORK5CYII=', 'base64');
+
+test('accepts supported square sizes for portrait sequences', () => {
+  assert.equal(validateSize(undefined), '1024x1024');
+  assert.equal(validateSize('2048x2048'), '2048x2048');
+  assert.equal(validateSize('1024x1024'), '1024x1024');
+});
+
+for (const size of ['0x0', '2049x2048', '4096x4096', '256x256', '512x2048', 'auto', 'oops']) {
+  test(`rejects unsupported size ${size}`, () => {
+    assert.throws(() => validateSize(size), /size/i);
+  });
+}
 
 test('accepts base64 image responses without fetching', async () => {
   const result = await decodeImageResponse({ data: [{ b64_json: png.toString('base64') }] }, () => {

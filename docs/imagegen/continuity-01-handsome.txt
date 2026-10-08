@@ -1,0 +1,5 @@
+Use case: identity-preserve
+Asset type: exaggerated handsome endpoint, one square photograph for a humorous portrait slider
+Input image 1: edit target, original smiling portrait; sole reference for identity, pose and composition.
+Primary request: make a clearly more exaggerated, exceptionally handsome version of this SAME adult man: striking model-like facial proportions, substantially more defined angular jawline and cheekbones, luminous healthy skin with real pores, captivating eyes, impeccably styled dark hair, attractive bright symmetrical smile. The difference must be noticeably stronger than subtle retouching, while he is still recognizably the same person.
+Constraints: preserve original head size, center, tilt, eye-line, smiling head direction, black hoodie, shoulder position, beige wall, crop, and flat everyday illumination. Make the face and grooming more handsome, not the photograph more cinematic. No change in camera or background, no props, no accessories, no new clothes. Single coherent photorealistic face, no composite, no double exposure, no ghosting, no text or watermark.

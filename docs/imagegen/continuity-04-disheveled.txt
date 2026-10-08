@@ -1,0 +1,5 @@
+Use case: identity-preserve
+Asset type: exaggerated unflattering endpoint, one square photograph for a humorous portrait slider
+Input image 1: edit target, original serious portrait; sole reference for identity, pose and composition.
+Primary request: create a MUCH more exaggerated, comically unflattering and disheveled version of the SAME adult man: chaotic greasy flattened hair with irregular sticking-out strands, visibly heavier uneven scruffy beard, prominent tired under-eye shadows and bags, puffy drooping cheeks, very slack grumpy mouth with an awkward pout, hunched rumpled appearance. Strong contrast with the clean original, still unmistakably recognizable and human.
+Constraints: preserve original head size, center, head turn toward the VIEWER'S LEFT, eye positions, shoulder crop, black hoodie, wall background and lighting. No injury, disease, grotesque anatomy, added teeth, scars, prison imagery, costumes, props or text. One coherent photorealistic face with natural skin texture, not a blended or superimposed photo.

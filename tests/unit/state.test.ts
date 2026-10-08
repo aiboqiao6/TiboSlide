@@ -55,24 +55,43 @@ describe('intensity state', () => {
 });
 
 describe('single-photo keyframes', () => {
-  it('orders four portraits and three separately generated intermediate photos', () => {
-    expect(PORTRAIT_FRAMES.map((frame) => frame.value)).toEqual([0, 16.5, 33, 50, 67, 83.5, 100]);
-    expect(PORTRAIT_FRAMES.map((frame) => frame.file)).toEqual([
-      'tibo-handsome.jpg', 'tibo-handsome-smile-mid.jpg', 'tibo-reset.jpg',
-      'tibo-smile-serious-mid.jpg', 'tibo-ban.jpg', 'tibo-serious-disheveled-mid.jpg',
-      'tibo-disheveled.jpg',
-    ]);
+  it('densely samples every segment without gaps larger than 2.3 percent', () => {
+    expect(PORTRAIT_FRAMES.length).toBeGreaterThanOrEqual(46);
+    for (let index = 1; index < PORTRAIT_FRAMES.length; index++) {
+      const gap = PORTRAIT_FRAMES[index].value - PORTRAIT_FRAMES[index - 1].value;
+      expect(gap).toBeGreaterThan(0);
+      expect(gap).toBeLessThanOrEqual(2.3);
+    }
+    expect(new Set(PORTRAIT_FRAMES.map((frame) => frame.file)).size).toBe(PORTRAIT_FRAMES.length);
   });
 
-  it.each([0, 16.5, 33, 50, 67, 83.5, 100])('selects the exact photo at %s', (value) => {
+  it.each([0, 33, 67, 100])('selects the exact anchor photo at %s', (value) => {
     expect(getPortraitFrame(value).value).toBe(value);
   });
 
-  it.each([
-    [8, 0], [8.25, 16.5], [24, 16.5], [25, 33], [41, 33],
-    [41.5, 50], [58, 50], [58.5, 67], [75, 67], [75.25, 83.5],
-    [91, 83.5], [91.75, 100], [-10, 0], [110, 100], [NaN, 0],
-  ])('selects one nearest frame for %s, not a blend', (value, expected) => {
+  it('replaces the exaggerated endpoints but preserves the original middle anchors', () => {
+    expect(getPortraitFrame(0).file).toBe('tibo-handsome-v2.jpg');
+    expect(getPortraitFrame(33).file).toBe('tibo-reset.jpg');
+    expect(getPortraitFrame(67).file).toBe('tibo-ban.jpg');
+    expect(getPortraitFrame(100).file).toBe('tibo-disheveled-v2.jpg');
+  });
+
+  it('shows at least fifteen different portraits between the middle anchors', () => {
+    const visited = new Set(Array.from({ length: 35 }, (_, index) => getPortraitFrame(index + 33).file));
+    expect(visited.size).toBeGreaterThanOrEqual(15);
+  });
+
+  it('selects a deterministic single nearest frame in both directions', () => {
+    const forwards = Array.from({ length: 101 }, (_, value) => getPortraitFrame(value));
+    const backwards = Array.from({ length: 101 }, (_, value) => getPortraitFrame(100 - value)).reverse();
+    expect(backwards).toEqual(forwards);
+    forwards.forEach((frame, value) => {
+      expect(PORTRAIT_FRAMES).toContain(frame);
+      expect(Math.abs(frame.value - value)).toBeLessThanOrEqual(1.15);
+    });
+  });
+
+  it.each([[-10, 0], [110, 100], [NaN, 0]])('clamps %s to the endpoint %s', (value, expected) => {
     expect(getPortraitFrame(value).value).toBe(expected);
   });
 });
